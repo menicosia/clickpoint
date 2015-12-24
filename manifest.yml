@@ -1,0 +1,6 @@
+---
+applications:
+- name: clickpoint
+  memory: 128M
+  services:
+    - clickpointDB
