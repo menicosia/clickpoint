@@ -2,8 +2,10 @@
 //   Think bit.ly with full access to click data.
 //   See README.md for details.
 
-// NOTE: If deployed locally, this will detect that it's not configured by Cloud Foundry, and instead will use the default:
-//   User: clickpoint Password: password Server IP: 127.0.0.1 Database: clickpoint
+// NOTE: If deployed locally, this will detect that it's not
+// configured by Cloud Foundry, and instead will use the default:
+//     User: clickpoint Password: password 
+//     Server IP: 127.0.0.1 Database: clickpoint
 //   To set up your local database, these two SQL queries may help:
 //     create user 'clickpoint'@'localhost' IDENTIFIED BY 'password';
 //     grant all privileges on clickpoint.* to 'clickpoint'@'localhost';
@@ -171,6 +173,11 @@ function requestHandler(request, response, done) {
             data += "I'm sorry, Dave, I can't do that. No connection to database." ;
             response.end(data) ;
         }
+        break ;
+    case "info":
+        // FIXME: This works when deployed to CF only, no local mode.
+        data += request.headers["x-forwarded-for"].split(',')[0] ;
+        response.end(data)
         break ;
     case "click":
         redirectKey = requestParts["pathname"].split('/')[2] ;
