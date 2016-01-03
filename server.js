@@ -30,6 +30,12 @@ var dbClient = undefined ;
 var dbConnectState = Boolean(false) ;
 var dbConnectTimer = undefined ;
 
+// Schema definition
+var schema = {
+    redirects : "(id int AUTO_INCREMENT primary key, redirectKey VARCHAR(50), url VARCHAR(2048))",
+    clicks : "(ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP, IP VARBINARY(16))"
+} ;
+
 // Setup based on Environment Variables
 if (process.env.VCAP_SERVICES) {
     vcap_services = JSON.parse(process.env.VCAP_SERVICES) ;
@@ -42,26 +48,41 @@ if (process.env.VCAP_SERVICES) {
     }
 } else {
     db_uri = "mysql://clickpoint:password@127.0.0.1/clickpoint" ;
-    console.log("Local mode set to true, configuring myself to use local MySQL.") ;
+    console.log("Local mode, configuring myself to use local MySQL.") ;
 }
 
 if (process.env.VCAP_APP_PORT) { port = process.env.VCAP_APP_PORT ; }
 
-function setupSchema() {
-    dbClient.query("show tables LIKE 'SampleData'", function(err, results, fields) {
-        if (err) {
-            console.error(err) ;
-            process.exit(1) ;
+function createOnEmpty(err, results, fields, tableName, create_def) {
+    if (err) {
+        console.error(err) ;
+        process.exit(1) ;
+    } else {
+        if (0 == results.length) {
+            console.log("Creating table: " + tableName) ;
+            dbClient.query(["create table ", tableName, create_def].join(" "),
+                           function (err, results, fields) {
+                               if (err) {
+                                   console.log("create table error: "
+                                               + JSON.stringify(err))}
+                           } ) ;
         } else {
-            if (0 == results.length) {
-                console.log("Setting up schema.") ;
-                dbClient.query("create table SampleData (K VARCHAR(20), V VARCHAR(20))",
-                               function (err, results, fields) {})
-            } else {
-                console.log("SampleData table already exists.") ;
-            }
+            console.log("  [schema] " + tableName + " table already exists.") ;
         }
-    }) ;
+    }
+}
+
+function setupSchema() {
+    for (table in schema) {
+        // Create a closure to handle re-using table for each in the array.
+        (function (table) {
+            dbClient.query("show tables LIKE '" + table + "'",
+                           function (err, results, fields) {
+                               createOnEmpty(err, results, fields,
+                                             table, schema[table])
+                           } ) ;
+        })(table) ;
+    }
 }
     
 // Callback functions
@@ -91,27 +112,8 @@ function handleDBConnect(err) {
     }
 }
 
-function handleDBping(request, response, err) {
-    if (err) {
-        console.log("MySQL Connection error: " + err) ;
-        response.end("MySQL connection error: " + err) ;
-        dbClient.destroy() ;
-        MySQLConnect() ;
-    } else {
-        response.end("MySQL ping successful.") ;
-    }
-}
-
-// Helper functions
-
-function doPing(request, response) {
-    dbClient.ping(function (err) {
-        handleDBping(request, response, err) ;
-    }) ;
-}
-
 function MySQLConnect() {
-    dbClient = mysql.createConnection(db_uri)
+    dbClient = mysql.createConnection(db_uri, {debug: true}) ;
     dbClient.connect(handleDBConnect) ;
 }
 
@@ -129,62 +131,77 @@ function errorDbNotReady(request, response) {
     response.end(errHTML) ;
 }
 
+function handleKeySearch(response, redirectKey, clickArgs) {
+    function cb(err, results, fields) {
+        if (1 == results.length) {
+            response.end("Thanks. Check the log.") ;
+        } else {
+            response.writeHead(404) ;
+            console.log("SQL ERR: " + JSON.stringify(err)) ;
+            response.end("Error: click redirect not found.") ;
+        }
+    } ;
+    return(cb) ;
+}
 
-function dispatchApi(response, redirectKey, query) {
-    console.log("Request key: " + redirectKey, " Query: " + JSON.stringify(query)) ;
-    switch (redirectKey) {
-    case "v25survey":
-        response.writeHead(302, {'Location': "http://www.pivotal.io/"}) ;
-        response.end() ;
-        break ;
-    default:
-        console.log("Falling through to returning 404") ;
-        response.writeHead(404) ;
-        response.end("ERROR: Invalid redirect key") ;
-    }
+// clickArgs are simply the results of url.parse["query"]
+function dispatchApi(response, redirectKey, clickArgs) {
+    var sql ;
+    console.log("Request key: " + JSON.stringify(redirectKey),
+                " Query: " + JSON.stringify(clickArgs)) ;
+
+    // Do a lookup in MySQL for the redirect key
+    // Create a record for that redirect key with the IP address and the clickArgs
+    // Redirect the user to where they're headed
+
+    // Look up the redirect Key
+    sql = "select id,url from redirects WHERE redirectKey = '" + redirectKey + "'" ;
+    console.info("SQL: " + sql) ;
+    
+    dbClient.query(sql,
+                   handleKeySearch(response, redirectKey, clickArgs)) ;
+    
+    // switch (redirectKey) {
+    // case "v25survey":
+    //     data += request.headers["x-forwarded-for"].split(',')[0] ;
+    //     response.writeHead(302, {'Location': "http://www.pivotal.io/"}) ;
+    //     response.end() ;
+    //     break ;
+    // default:
+    //     console.log("Falling through to returning 404") ;
+    //     response.writeHead(404) ;
+    //     response.end("ERROR: Invalid redirect key") ;
+    // }
 }
 
 function requestHandler(request, response, done) {
     data = "" ;
     requestParts = url.parse(request.url, true) ;
+    requestPath = requestParts["pathname"].split('/') ;
     rootCall = requestParts["pathname"].split('/')[1] ;
     console.log("Recieved request for: " + rootCall) ;
     switch (rootCall) {
-    case "env":
-	      if (process.env) {
-	          data += "<p>" ;
-		        for (v in process.env) {
-		            data += v + "=" + process.env[v] + "<br>\n" ;
-		        }
-		        data += "<br>\n" ;
-	      } else {
-		        data += "<p> No process env? <br>\n" ;
-	      }
-        response.end(data) ;
-        break ;
-    case "dbstatus":
-        data += dbConnectState ;
-        response.end(data) ;
-        break ;
-    case "ping":
-        if (dbConnectState) {
-            doPing(request, response) ;
-        } else {
-            data += "I'm sorry, Dave, I can't do that. No connection to database." ;
-            response.end(data) ;
-        }
-        break ;
     case "info":
-        // FIXME: This works when deployed to CF only, no local mode.
-        data += request.headers["x-forwarded-for"].split(',')[0] ;
-        response.end(data)
+        if (request.headers["x-forwarded-for"]) {
+            data += request.headers["x-forwarded-for"].split(',')[0] ;
+        } else {
+            // FIXME: This works when deployed to CF only, no local mode.
+            data += "127.0.0.1" ;
+        }
+        response.end(data) ;
         break ;
     case "click":
-        redirectKey = requestParts["pathname"].split('/')[2] ;
-        dispatchApi(response, redirectKey, requestParts["query"]) ;
+        if (3 === requestPath.length) {
+            redirectKey = requestParts["pathname"].split('/')[2] ;
+            dispatchApi(response, redirectKey, requestParts["query"]) ;
+        } else {
+            console.warn("Invalid redirect request: " + request.url) ;
+            response.writeHead(404) ;
+            response.end("The link you clicked on was not properly formed, sorry!") ;
+        }
         break ;
     default:
-        console.log("Unhandled request, falling through.") ;
+        console.log("Unhandled request: " + request.url + ", falling through.") ;
         done() ;
     }
 }
