@@ -50,7 +50,7 @@ if (process.env.VCAP_APP_PORT) { port = process.env.VCAP_APP_PORT ; }
 
 var schema = {
     redirects : "(id int AUTO_INCREMENT primary key, redirectKey VARCHAR(50) NOT NULL, url VARCHAR(2048) NOT NULL, active BIT(1) DEFAULT b'1')",
-    clicks : "(ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP, IP VARBINARY(16), value VARCHAR(50), active BIT(1) DEFAULT b'1')"
+    clicks : "(rID int primary key, ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP, IP VARBINARY(16), value VARCHAR(50), active BIT(1) DEFAULT b'1')"
 } ;
 
 function createOnEmpty(err, results, fields, tableName, create_def) {
@@ -62,7 +62,7 @@ function createOnEmpty(err, results, fields, tableName, create_def) {
         if (0 == results.length) {
             util.log("Creating table: " + tableName) ;
             sql = util.format("create table %s %s", tableName, create_def) ;
-            console.log(sql) ;
+            console.info(sql) ;
             dbClient.query(sql,
                            function (err, results, fields) {
                                if (err) {
@@ -151,29 +151,34 @@ function handleClickRecord(response, url) {
 function handleKeySearch(response, redirectKey, requestIP, value) {
     function cb(err, results, fields) {
         var url ;
+        var rID ;
         if (err) {
             response.writeHead(500) ;
             util.log("SQL ERR: " + JSON.stringify(err)) ;
             response.end("Internal Server Error: click redirect not found.") ;
         } else if (1 <= results.length) {
+            rID = results[0]["id"] ;
             url = results[0]["url"] ;
-            sql = util.format("insert into clicks VALUES (%s, '%s', '%s')",
-                              "null", requestIP, value) ;
+            sql = util.format("insert into clicks VALUES (%s, NULL, '%s', '%s', DEFAULT)",
+                              rID, requestIP, value) ;
             console.info("SQL: " + sql) ;
             dbClient.query(sql,
                            handleClickRecord(response, url)) ;
-        } else {
-            util.log("Invalid redirectKey request: " + redirectKey) ;
+        } else if (0 <= results.length) {
             response.writeHead(404) ;
             response.end("The link you've clicked hasn't got an active"
                          + " redirect associated.") ;
+        } else {
+            util.log("Unhandled request: " + redirectKey) ;
+            response.writeHead(500) ;
+            response.end("Internal Server error: Unable to find redirect") ;
         }
     } ;
     return(cb) ;
 }
 
 // clickArgs are simply the results of url.parse["query"]
-function dispatchApi(response, redirectKey, requestIP, clickArgs) {
+function handleClick(response, redirectKey, requestIP, clickArgs) {
     var sql ;
     var args, value ;
     
@@ -200,6 +205,33 @@ function dispatchApi(response, redirectKey, requestIP, clickArgs) {
     
 }
 
+// Admin forms
+function handleCreateRedirect(response) {
+    function cb(err, results, fields) {
+        if (err) {
+            response.writeHead(500) ;
+            util.log("SQL ERR: " + JSON.stringify(err)) ;
+            response.end("Failed to create new redirect, see logs.") ;
+        } else {
+            response.end("Success.") ;
+        }
+    }
+    return(cb) ;
+}
+    
+function newRedirect(response, query) {
+    var sql ;
+    util.log("Got request to create a new redirect with args: "
+             + JSON.stringify(query)) ;
+    sql = util.format("insert into redirects VALUES (NULL, '%s', '%s', DEFAULT)",
+                      query["redirectName"], query["redirectUrl"]) ;
+    console.info("SQL: " + sql) ;
+    dbClient.query(sql,
+                   handleCreateRedirect(response)) ;
+}
+
+// MAIN
+
 function requestHandler(request, response, done) {
     var requestIP ;
     requestParts = url.parse(request.url, true) ;
@@ -216,10 +248,13 @@ function requestHandler(request, response, done) {
     case "info":
         response.end("Your originating IP: " + requestIP) ;
         break ;
+    case "newRedirect":
+        newRedirect(response, requestParts["query"]) ;
+        break ;
     case "click":
         if (3 === requestPath.length) {
             redirectKey = requestParts["pathname"].split('/')[2] ;
-            dispatchApi(response, redirectKey,
+            handleClick(response, redirectKey,
                         requestIP, requestParts["query"]) ;
         } else {
             console.warn("Invalid redirect request: " + request.url) ;
