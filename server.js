@@ -230,7 +230,7 @@ function newRedirect(response, query) {
                    handleCreateRedirect(response)) ;
 }
 
-// MAIN
+// ---
 
 function requestHandler(request, response, done) {
     var requestIP ;
@@ -274,7 +274,7 @@ MySQLConnect() ;
     
 var staticServer = serveStatic("static") ;
 clickPointServer = http.createServer(function(req, res) {
-    done = finalhandler(req, res) ;
+    var done = finalhandler(req, res) ;
     staticServer(req, res, function () {requestHandler(req, res, done)}) ;
 }) ;
 
