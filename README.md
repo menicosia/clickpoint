@@ -2,7 +2,7 @@
 
 We need feedback from users, but that's very hard to get. Many users are too lazy or passive to bother filling out a survey. In fact, many are reticent to do so for a variety of reasons, including fear of 'going on the record.'
 
-One solution is to implement the lower-bound of data gathering: by supplying a simple choice of images (:thumbs-up: / :thumbs-down:), we can anonymously collect data from users by simply having them click an image.
+One solution is to implement the lower-bound of data gathering: by supplying a simple choice of images (:thumbsup: / :thumbsdown:), we can anonymously collect data from users by simply having them click an image.
 
 Clickpoint, then, is a small webservice designed to accept connections from arbitrary sources, record as much as possible, and forward them on to an ultimate destination.
 
@@ -11,12 +11,12 @@ By using the simple URLs provided by clickpoint, you can embed 'voting' in web p
 Clickpoint's support of arbitrary tags emable it to be used for other use-cases as well, such as version tracking of downloads, etc. This quickly eats into [Bitly](http://bit.ly/) functionality. If you are finding yourselve limited by what Clickpoint can do, you should probably be looking at switching to or additionally leveraging Bitly.
 
 ## Initial use case
-   Collect immediate feedback by embedding two separate options (thumbs up / thumbs down) in an e-mail, both leading to a "further feedback" survey.
+   Collect immediate feedback by embedding two separate options (:thumbsup: / :thumbsdown:) in an e-mail, both leading to a "further feedback" survey.
 
-### Options considered, but discarded:
-    1. SurveyMonkey: Excellent survey service only collects data on submit, not open
+### Options considered, but discarded
+   1. SurveyMonkey: Excellent survey service only collects data on submit, not open
       - I am mostly using SurveyMonkey as a destination URL for redirect targets.
-    1. bit.ly: Seemingly would be a perfect fit, but doesn't supply raw data (for free)?
+   1. bit.ly: Seemingly would be a perfect fit, but doesn't supply raw data (for free)?
 
 ## Usage
 
