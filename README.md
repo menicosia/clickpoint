@@ -25,10 +25,11 @@ Clickpoint's support of arbitrary tags emable it to be used for other use-cases 
    If you don't have access to a Cloud Foundry, you can use [PCF Dev](https://pivotal.io/pcf-dev) on your workstation or hosted Cloud Foundry via [Pivotal Web Services](http://run.pivotal.io/).
 
 ### Example
+
+If you use the included [manifest.yml](manifest.yml), pushing the app is as simple as:
+
    1. cf create-service p-mysql 100mb clickpointDB
-   1. cf push --no-start
-   1. cf bind-service clickpoint clickpointDB
-   1. cf restart
+   1. cf push
 
 #### To create a campaign
    1. Visit clickpoint.APP-DOMAIN/new-redirect.html
