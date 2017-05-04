@@ -22,7 +22,7 @@ Clickpoint's support of arbitrary tags emable it to be used for other use-cases 
 
    This is distributed as a Cloud Foundry app, and depends on a MySQL-compatible (p-mysql, cleardb) service instance.
 
-#### Example
+### Example
    1. cf create-service p-mysql 100mb clickpointDB
    1. cf push --no-start
    1. cf bind-service clickpoint clickpointDB
@@ -36,13 +36,13 @@ Clickpoint's support of arbitrary tags emable it to be used for other use-cases 
          1. Sentiment analysis: I give anonymous users three choices: up/down/meh
          1. Response tracking: I generate a unique URL+tag combination for every e-mail address I intend to send to. In the results, I can join against the clicks table to find who has not clicked, who has, and for those that have, what their corresponding IP address is.
 
-   To view campaign results
-    - There is no UI component to view results. Instead, I use [Sequel Pro](http://www.sequelpro.com/)
-    - Open up an SSH tunnel via your clickpoint App, using these [instructions](https://docs.google.com/document/d/1iUXPM8ssQv3nDP9BXQs7oEymTL7HUqjgAC7Yw2W16jk).
-    - Run Sequel Pro, select the 'clicks' table.
-    - I use this SQL to view click responses:
+#### To view campaign results
+   - There is no UI component to view results. Instead, I use [Sequel Pro](http://www.sequelpro.com/)
+   - Open up an SSH tunnel via your clickpoint App, using these [instructions](https://docs.google.com/document/d/1iUXPM8ssQv3nDP9BXQs7oEymTL7HUqjgAC7Yw2W16jk).
+   - Run Sequel Pro, select the 'clicks' table.
+   - I use this SQL to view click responses:
       `select TS,IP,value from clicks where rID=4 and active=b'1' and IP != '209.234.137.222';`
-      - I exclude the IP of my own office. I could issue a query to change any click with that IP to inactive (b'0') but I haven't bothered yet.
+   - I exclude the IP of my own office. I could issue a query to change any click with that IP to inactive (b'0') but I haven't bothered yet.
 
 ### Configuration
 
