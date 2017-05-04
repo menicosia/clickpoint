@@ -40,8 +40,8 @@ If you use the included [manifest.yml](manifest.yml), pushing the app is as simp
          1. Response tracking: I generate a unique URL+tag combination for every e-mail address I intend to send to. In the results, I can join against the clicks table to find who has not clicked, who has, and for those that have, what their corresponding IP address is.
 
 #### To view campaign results
-   - There is no UI component to view results. Instead, I use [Sequel Pro](http://www.sequelpro.com/)
-   - Open up an SSH tunnel via your clickpoint App, using these [instructions](https://docs.google.com/document/d/1iUXPM8ssQv3nDP9BXQs7oEymTL7HUqjgAC7Yw2W16jk).
+   - There is no UI component to view results. Instead, I use [Sequel Pro](http://www.sequelpro.com/).
+   - Open up an SSH tunnel via your clickpoint App, using these [instructions](https://docs.cloudfoundry.org/devguide/deploy-apps/ssh-services.html).
    - Run Sequel Pro, select the 'clicks' table.
    - I use this SQL to view click responses:
       `select TS,IP,value from clicks where rID=4 and active=b'1' and IP != '209.234.137.222';`
