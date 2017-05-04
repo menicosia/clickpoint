@@ -1,7 +1,9 @@
 {
   "name": "clickpoint",
   "version": "0.0.1",
+  "license": "MIT",
   "author": "Marco Nicosia",
+  "url": "https://github.com/menicosia",
   "dependencies": {
     "strftime": "0.8.2",
     "time": "0.11.3",
