@@ -22,6 +22,8 @@ Clickpoint's support of arbitrary tags emable it to be used for other use-cases 
 
    This is distributed as a Cloud Foundry app, and depends on a MySQL-compatible (p-mysql, cleardb) service instance.
 
+   If you don't have access to a Cloud Foundry, you can use [PCF Dev](https://pivotal.io/pcf-dev) on your workstation or hosted Cloud Foundry via [Pivotal Web Services](http://run.pivotal.io/).
+
 ### Example
    1. cf create-service p-mysql 100mb clickpointDB
    1. cf push --no-start
