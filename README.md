@@ -44,7 +44,7 @@ If you use the included [manifest.yml](manifest.yml), pushing the app is as simp
    - Open up an SSH tunnel via your clickpoint App, using these [instructions](https://docs.cloudfoundry.org/devguide/deploy-apps/ssh-services.html).
    - Run Sequel Pro, select the 'clicks' table.
    - I use this SQL to view click responses:
-      `select TS,IP,value from clicks where rID=4 and active=b'1' and IP != '209.234.137.222';`
+      `select TS,IP,value from clicks where rID=4 and active=b'1' and IP != '192.0.12.222';`
    - I exclude the IP of my own office. I could issue a query to change any click with that IP to inactive (b'0') but I haven't bothered yet.
 
 ### Configuration
