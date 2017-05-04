@@ -5,14 +5,14 @@
   "author": "Marco Nicosia",
   "url": "https://github.com/menicosia",
   "dependencies": {
-    "strftime": "0.8.2",
-    "time": "0.11.3",
-    "mysql": "2.8.0",
-    "serve-static": "1.10.0",
-    "finalhandler": "0.4.0"
+    "strftime": "*",
+    "time": "*",
+    "mysql": "*",
+    "serve-static": "*",
+    "finalhandler": "*"
   },
   "engines": {
-    "node": "0.10.x",
-    "npm": "1.3.x"
+    "node": "*",
+    "npm": "*"
   }
 }
