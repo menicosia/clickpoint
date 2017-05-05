@@ -2,7 +2,7 @@
 
 We need feedback from users, but that's very hard to get. Many users are too lazy or passive to bother filling out a survey. In fact, many are reticent to do so for a variety of reasons, including fear of 'going on the record.'
 
-One solution is to implement the lower-bound of data gathering: by supplying a simple choice of images ([:thumbsup:](http://clickpoint.cfapps.io/click/clickpoint-readme?thumbsup) / [:thumbsdown:](http://clickpoint.cfapps.io/click/clickpoint-readme?thumbsdown), we can anonymously collect data from users by simply having them click an image.
+Unlike web-based surveys, Clickpoint implements the lower-bound of data gathering: by supplying a simple choice of images ([:thumbsup:](http://clickpoint.cfapps.io/click/clickpoint-readme?thumbsup) / [:thumbsdown:](http://clickpoint.cfapps.io/click/clickpoint-readme?thumbsdown)), users can easily and anonymously give feedback directly from their browser, email client, or messaging app. They just click an image. Even if they immediately close the subsequent browser window, they've contributed.
 
 Clickpoint, then, is a small webservice designed to accept connections from arbitrary sources, record as much as possible, and forward them on to an ultimate destination.
 
