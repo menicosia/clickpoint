@@ -8,7 +8,6 @@ Clickpoint, then, is a small webservice designed to accept connections from arbi
 
 By using the simple URLs provided by clickpoint, you can embed 'voting' in web pages, e-mail, QR codes, etc.
 
-Clickpoint's support of arbitrary tags emable it to be used for other use-cases as well, such as version tracking of downloads, etc. This quickly eats into [Bitly](http://bit.ly/) functionality. If you are finding yourselve limited by what Clickpoint can do, you should probably be looking at switching to or additionally leveraging Bitly.
 
 ## Initial use case
    Collect immediate feedback by embedding two separate options (:thumbsup: / :thumbsdown:) in an e-mail, both leading to a "further feedback" survey.
@@ -17,6 +16,10 @@ Clickpoint's support of arbitrary tags emable it to be used for other use-cases 
    1. SurveyMonkey: Excellent survey service only collects data on submit, not open
       - I am mostly using SurveyMonkey as a destination URL for redirect targets.
    1. bit.ly: Seemingly would be a perfect fit, but doesn't supply raw data (for free)?
+   
+      [Bitly](http://bit.ly/) isn't focused on recording specific IP addresses. The goal of Clickpoint is, "One IP, one vote" regardless of how many duplicates are recorded. Bitly is more about understanding your mass audience demographics.
+
+      Finally, Clickpoint's support of arbitrary tags enables it to be used for other use cases as well, such as version tracking of downloads, etc. Creating arbitrary links for Clickpoint aggregates them all under one "redirect" campaign, making the data easier to analyze than distinct Bitly links.
 
 ## Usage
 
