@@ -1,6 +1,7 @@
 ---
 applications:
 - name: clickpoint
+  buildpack: nodejs_buildpack
   memory: 128M
   services:
-    - clickpointDB
+    - acceptDB
