@@ -2,13 +2,12 @@
 
 We need feedback from users, but that's very hard to get. Many users are too lazy or passive to bother filling out a survey. In fact, many are reticent to do so for a variety of reasons, including fear of 'going on the record.'
 
-One solution is to implement the lower-bound of data gathering: by supplying a simple choice of images ([:thumbsup:](http://clickpoint.cfapps.io/click/clickpoint-readme?thumbsup) / [:thumbsdown:](http://clickpoint.cfapps.io/click/clickpoint-readme?thumbsdown), we can anonymously collect data from users by simply having them click an image.
+Unlike web-based surveys, Clickpoint implements the lower-bound of data gathering: by supplying a simple choice of images ([:thumbsup:](http://clickpoint.cfapps.io/click/clickpoint-readme?thumbsup) / [:thumbsdown:](http://clickpoint.cfapps.io/click/clickpoint-readme?thumbsdown)), users can easily and anonymously give feedback directly from their browser, email client, or messaging app. They just click an image. Even if they immediately close the subsequent browser window, they've contributed.
 
 Clickpoint, then, is a small webservice designed to accept connections from arbitrary sources, record as much as possible, and forward them on to an ultimate destination.
 
 By using the simple URLs provided by clickpoint, you can embed 'voting' in web pages, e-mail, QR codes, etc.
 
-Clickpoint's support of arbitrary tags emable it to be used for other use-cases as well, such as version tracking of downloads, etc. This quickly eats into [Bitly](http://bit.ly/) functionality. If you are finding yourselve limited by what Clickpoint can do, you should probably be looking at switching to or additionally leveraging Bitly.
 
 ## Initial use case
    Collect immediate feedback by embedding two separate options (:thumbsup: / :thumbsdown:) in an e-mail, both leading to a "further feedback" survey.
@@ -17,6 +16,10 @@ Clickpoint's support of arbitrary tags emable it to be used for other use-cases 
    1. SurveyMonkey: Excellent survey service only collects data on submit, not open
       - I am mostly using SurveyMonkey as a destination URL for redirect targets.
    1. bit.ly: Seemingly would be a perfect fit, but doesn't supply raw data (for free)?
+   
+      [Bitly](http://bit.ly/) isn't focused on recording specific IP addresses. The goal of Clickpoint is, "One IP, one vote" regardless of how many duplicates are recorded. Bitly is more about understanding your mass audience demographics.
+
+      Finally, Clickpoint's support of arbitrary tags enables it to be used for other use cases as well, such as version tracking of downloads, etc. Creating arbitrary links for Clickpoint aggregates them all under one "redirect" campaign, making the data easier to analyze than distinct Bitly links.
 
 ## Usage
 
