@@ -19,29 +19,19 @@ var time = require('time') ;
 var url = require('url') ;
 var util = require('util') ;
 var mysql = require('mysql') ;
+var bindMySQL = require('./bind-mysql.js') ;
 
 // Variables
 var port = 8080 ;
 var done = undefined ;
-var db_uri = undefined ;
-var vcap_services = undefined ;
+var mysql_creds = undefined ;
 var dbClient = undefined ;
 var dbConnectState = Boolean(false) ;
 var dbConnectTimer = undefined ;
 
 // Setup based on Environment Variables
 if (process.env.VCAP_SERVICES) {
-    vcap_services = JSON.parse(process.env.VCAP_SERVICES) ;
-    if (vcap_services['p-mysql']) {
-        db_uri = vcap_services["p-mysql"][0]["credentials"]["uri"] ;
-        util.log("Got access credentials to p-mysql: " + db_uri) ;
-    } else if (vcap_services['cleardb']) {
-        db_uri = vcap_services["cleardb"][0]["credentials"]["uri"] ;
-        util.log("Got access credentials to ClearDB: " + db_uri) ;
-    }
-} else {
-    db_uri = "mysql://clickpoint:password@127.0.0.1/clickpoint" ;
-    util.log("Local mode, configuring myself to use local MySQL.") ;
+    mysql_creds = bindMySQL.getMySQLCreds() ;
 }
 
 if (process.env.VCAP_APP_PORT) { port = process.env.VCAP_APP_PORT ; }
@@ -89,8 +79,19 @@ function setupSchema() {
 }
     
 function MySQLConnect() {
-    dbClient = mysql.createConnection(db_uri, {debug: true}) ;
-    dbClient.connect(handleDBConnect) ;
+    var clientConfig = {
+        host : mysql_creds["host"],
+        user : mysql_creds["user"],
+        password : mysql_creds["password"],
+        port : mysql_creds["port"],
+        database : mysql_creds["database"]
+    } ;
+    if (mysql_creds["ca_certificate"]) {
+        console.log("CA Cert detected; using TLS");
+        clientConfig["ssl"] = { ca : mysql_creds["ca_certificate"] } ;
+    }
+    dbClient = mysql.createConnection( clientConfig ) ;
+    dbClient.connect((error) => { handleDBConnect(error)} );
 }
 
 
