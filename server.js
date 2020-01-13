@@ -40,7 +40,7 @@ if (process.env.VCAP_APP_PORT) { port = process.env.VCAP_APP_PORT ; }
 
 var schema = {
     redirects : "(id int AUTO_INCREMENT primary key, redirectKey VARCHAR(50) NOT NULL, url VARCHAR(2048) NOT NULL, active BIT(1) DEFAULT b'1')",
-    clicks : "(rID int, ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP, IP VARBINARY(16), value VARCHAR(50), active BIT(1) DEFAULT b'1')"
+    clicks : "(rID int, ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP, IP VARBINARY(16), value VARCHAR(50), active BIT(1) DEFAULT b'1', comment VARCHAR(75))"
 } ;
 
 function createOnEmpty(err, results, fields, tableName, create_def) {
