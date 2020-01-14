@@ -40,7 +40,7 @@ if (process.env.VCAP_APP_PORT) { port = process.env.VCAP_APP_PORT ; }
 
 var schema = {
     redirects : "(id int AUTO_INCREMENT primary key, redirectKey VARCHAR(50) NOT NULL, url VARCHAR(2048) NOT NULL, active BIT(1) DEFAULT b'1')",
-    clicks : "(rID int, ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP, IP VARBINARY(16), value VARCHAR(50), active BIT(1) DEFAULT b'1', comment VARCHAR(75))"
+    clicks : "(rID int, ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP, IP VARBINARY(16), value VARCHAR(50), active BIT(1) DEFAULT b'1', comment VARCHAR(255))"
 } ;
 
 function createOnEmpty(err, results, fields, tableName, create_def) {
@@ -160,7 +160,7 @@ function handleKeySearch(response, redirectKey, requestIP, value) {
         } else if (1 <= results.length) {
             rID = results[0]["id"] ;
             url = results[0]["url"] ;
-            sql = util.format("insert into clicks VALUES (%s, NULL, '%s', '%s', DEFAULT)",
+            sql = util.format("insert into clicks VALUES (%s, NULL, '%s', '%s', DEFAULT, NULL)",
                               rID, requestIP, value) ;
             console.info("SQL: " + sql) ;
             dbClient.query(sql,
